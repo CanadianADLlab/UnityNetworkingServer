@@ -15,6 +15,8 @@ namespace WebServer
             ID = _clientId;
             Tcp = new TCP(ID);
         }
+
+
         public class TCP
         {
             public TcpClient Socket;
@@ -37,10 +39,25 @@ namespace WebServer
                 stream = Socket.GetStream();
                 receiveBuffer = new byte[DataBufferSize];
                 stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
+                Console.WriteLine("Sending welcome");
+                ServerSend.Welcome(id,"Welcome to the server!");
             }
 
 
-
+            public void SendData(Packet _packet)
+            {
+                try
+                {
+                    if (Socket != null)
+                    {
+                        stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error sending data to player " + e);
+                }
+            }
             private void ReceiveCallBack(IAsyncResult _result)
             {
                 try
