@@ -11,19 +11,15 @@ namespace WebServer
         {
             int _clientIDCheck = _packet.ReadInt();
             string username = _packet.ReadString();
-            Console.WriteLine($"{Server.clients[_fromClient].Tcp.Socket.Client.RemoteEndPoint} connected succesfully and is now player {_fromClient}");
+            Console.WriteLine($"{Server.Clients[_fromClient].Tcp.Socket.Client.RemoteEndPoint} connected succesfully and is now player {_fromClient}");
 
             if (_fromClient != _clientIDCheck)
             {
                 Console.WriteLine($"Player {username} has gotten the wrong client id somehow!");
             }
+            Server.Clients[_fromClient].SendIntoGame(username);
         }
 
-        public static void UDPReceived(int _fromClient, Packet _packet)
-        {
-            string msg = _packet.ReadString();
-            Console.WriteLine($"{msg} this came from the thing");
-        }
 
 
 

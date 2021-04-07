@@ -10,13 +10,13 @@ namespace WebServer
         private static void SendTCPData(int _toClient, Packet _packet)
         {
             _packet.WriteLength();
-            Server.clients[_toClient].Tcp.SendData(_packet);
+            Server.Clients[_toClient].Tcp.SendData(_packet);
         }
 
-          private static void SendUDPData(int _toClient, Packet _packet)
+        private static void SendUDPData(int _toClient, Packet _packet)
         {
             _packet.WriteLength();
-            Server.clients[_toClient].Udp.SendData(_packet);
+            Server.Clients[_toClient].Udp.SendData(_packet);
         }
 
 
@@ -25,7 +25,7 @@ namespace WebServer
             _packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; i++)
             {
-                Server.clients[i].Tcp.SendData(_packet);
+                Server.Clients[i].Tcp.SendData(_packet);
             }
         }
         private static void SendTCPDataToAll(int _exceptClient, Packet _packet)
@@ -35,19 +35,19 @@ namespace WebServer
             {
                 if (i != _exceptClient)
                 {
-                    Server.clients[i].Tcp.SendData(_packet);
+                    Server.Clients[i].Tcp.SendData(_packet);
                 }
             }
         }
 
 
-        
+
         private static void SendUDPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
             for (int i = 1; i <= Server.MaxPlayers; i++)
             {
-                Server.clients[i].Udp.SendData(_packet);
+                Server.Clients[i].Udp.SendData(_packet);
             }
         }
         private static void SendUDPDataToAll(int _exceptClient, Packet _packet)
@@ -57,7 +57,7 @@ namespace WebServer
             {
                 if (i != _exceptClient)
                 {
-                    Server.clients[i].Udp.SendData(_packet);
+                    Server.Clients[i].Udp.SendData(_packet);
                 }
             }
         }
@@ -73,11 +73,14 @@ namespace WebServer
         }
 
 
-          public static void UDPTest(int _toClient)
+        public static void SpawnPlayer(int _toClient, Player _player)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.udpTest))
+            using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer))
             {
-                _packet.Write("udp test from the server");
+                _packet.Write(_player.ID);
+                _packet.Write(_player.Username);
+                _packet.Write(_player.Position);
+                _packet.Write(_player.Rotation);
 
                 SendTCPData(_toClient, _packet);
             }

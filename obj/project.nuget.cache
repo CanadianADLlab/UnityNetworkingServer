@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "WJUzH9OQozrz3l9321OmZ6AoeyZuuswFlOpUf6cFhgEUzsoAaxoOItZ6bhXoDwGAH325XNePZvr/v/rvMe1uIQ==",
+  "dgSpecHash": "Z2IOUcHtgc2D/cYlPXzX6tw+eXQ87IpjIpa/CuIpeVd0DAWqvGXUgMgkvuKH5L3r9qmyFKTSUDJ2rj3nNZYXrA==",
   "success": true,
   "projectFilePath": "C:\\MAMP\\htdocs\\WebServer\\WebServer.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Shaun\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -10,7 +10,7 @@ namespace WebServer
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
 
-        public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
+        public static Dictionary<int, Client> Clients = new Dictionary<int, Client>();
         private static TcpListener tcpListener;
         private static UdpClient udpListener;
         public delegate void PacketHandler(int _fromClient, Packet _packet);
@@ -43,9 +43,9 @@ namespace WebServer
 
             for (int i = 1; i <= MaxPlayers; i++)
             {
-                if (clients[i].Tcp.Socket == null)
+                if (Clients[i].Tcp.Socket == null)
                 {
-                    clients[i].Tcp.Connect(_client);
+                    Clients[i].Tcp.Connect(_client);
                     return;
                 }
             }
@@ -74,17 +74,17 @@ namespace WebServer
                         return;
                     }
 
-                    if (clients[_clientId].Udp.EndPoint == null)
+                    if (Clients[_clientId].Udp.EndPoint == null)
                     {
-                        clients[_clientId].Udp.Connect(_clientEndPoint);
+                        Clients[_clientId].Udp.Connect(_clientEndPoint);
                         return;
                     }
 
 
 
-                    if (clients[_clientId].Udp.EndPoint.ToString() == _clientEndPoint.ToString())
+                    if (Clients[_clientId].Udp.EndPoint.ToString() == _clientEndPoint.ToString())
                     {
-                        clients[_clientId].Udp.HandleData(_packet);
+                        Clients[_clientId].Udp.HandleData(_packet);
                     }
                 }
             }
@@ -98,9 +98,9 @@ namespace WebServer
         {
             try
             {
-                if(_clientEndPoint != null)
+                if (_clientEndPoint != null)
                 {
-                    udpListener.BeginSend(_packet.ToArray(),_packet.Length(),_clientEndPoint,null,null);
+                    udpListener.BeginSend(_packet.ToArray(), _packet.Length(), _clientEndPoint, null, null);
                 }
             }
             catch (Exception e)
@@ -112,13 +112,12 @@ namespace WebServer
         {
             for (int i = 1; i <= MaxPlayers; i++)
             {
-                clients.Add(i, new Client(i));
+                Clients.Add(i, new Client(i));
             }
 
             packetHandlers = new Dictionary<int, PacketHandler>()
              {
-            {(int)ServerPackets.welcome,ServerHandle.WelcomeReceived},
-            {(int)ServerPackets.udpTest,ServerHandle.UDPReceived}
+            {(int)ServerPackets.welcome,ServerHandle.WelcomeReceived}
             };
             Console.WriteLine("inited");
         }

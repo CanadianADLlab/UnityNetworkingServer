@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 
 namespace WebServer
 {
@@ -9,6 +10,7 @@ namespace WebServer
         public static int DataBufferSize = 4096;
         public int ID;
 
+        public Player Player;
         public TCP Tcp;
         public UDP Udp;
         public Client(int _clientId)
@@ -140,7 +142,6 @@ namespace WebServer
             public void Connect(IPEndPoint _endPoint)
             {
                 EndPoint = _endPoint;
-                ServerSend.UDPTest(id);
             }
             public void SendData(Packet _packet)
             {
@@ -162,6 +163,29 @@ namespace WebServer
                     Server.packetHandlers[_packetId](id, _packet);
                 }
             });
+            }
+        }
+        public void SendIntoGame(string _playerName)
+        {
+            Player = new Player(ID, _playerName, Vector3.Zero);
+
+            foreach (Client _client in Server.Clients.Values)
+            {
+                if (_client.Player != null)
+                {
+                    if (_client.ID != ID)
+                    {
+                        ServerSend.SpawnPlayer(ID, _client.Player); // tell the game server to spawn the other pla yer
+                    }
+                }
+            }
+
+            foreach (Client _client in Server.Clients.Values)
+            {
+                if (_client.Player != null)
+                {
+                    ServerSend.SpawnPlayer(_client.ID, Player); // tell the player to spawn me
+                }
             }
         }
     }
