@@ -24,6 +24,7 @@ namespace WebServer
 
             private NetworkStream stream;
             private byte[] receiveBuffer;
+            private Packet receivedData;
 
             public TCP(int _id)
             {
@@ -38,45 +39,90 @@ namespace WebServer
 
                 stream = Socket.GetStream();
                 receiveBuffer = new byte[DataBufferSize];
+                receivedData = new Packet();
                 stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
                 Console.WriteLine("Sending welcome");
-                ServerSend.Welcome(id,"Welcome to the server!");
+                ServerSend.Welcome(id, "Welcome to the server!");
             }
 
-
-            public void SendData(Packet _packet)
+            private bool HandleData(byte[] _data)
             {
-                try
+                int _packetLength = 0;
+
+                receivedData.SetBytes(_data);
+                if (receivedData.UnreadLength() >= 4) // means an id was sent because an int contains 4 bytes
                 {
-                    if (Socket != null)
+                    _packetLength = receivedData.ReadInt();
+                    if (_packetLength <= 0)
                     {
-                        stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
+                        return true;
                     }
                 }
-                catch (Exception e)
+
+                while (_packetLength > 0 && _packetLength <= receivedData.UnreadLength())
                 {
-                    Console.WriteLine("Error sending data to player " + e);
+                    byte[] _packetBytes = receivedData.ReadBytes(_packetLength);
+                    ThreadManager.ExecuteOnMainThread(() =>
+                    {
+                        using (Packet _packet = new Packet(_packetBytes))
+                        {
+                            int _packetId = _packet.ReadInt();
+                            Server.packetHandlers[_packetId](id,_packet);
+                        }
+                    });
+                    _packetLength = 0;
+                    if (receivedData.UnreadLength() >= 4) // means an id was sent because an int contains 4 bytes
+                    {
+                        _packetLength = receivedData.ReadInt();
+                        if (_packetLength <= 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                if (_packetLength <= 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+        public void SendData(Packet _packet)
+        {
+            try
+            {
+                if (Socket != null)
+                {
+                    stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
                 }
             }
-            private void ReceiveCallBack(IAsyncResult _result)
+            catch (Exception e)
             {
-                try
+                Console.WriteLine("Error sending data to player " + e);
+            }
+        }
+        private void ReceiveCallBack(IAsyncResult _result)
+        {
+            try
+            {
+                int _byteLength = stream.EndRead(_result);
+                if (_byteLength <= 0)
                 {
-                    int _byteLength = stream.EndRead(_result);
-                    if (_byteLength <= 0)
-                    {
-                        return;
-                    }
-                    byte[] _data = new byte[_byteLength];
-                    Array.Copy(receiveBuffer, _data, _byteLength);
+                    return;
+                }
+                byte[] _data = new byte[_byteLength];
+                Array.Copy(receiveBuffer, _data, _byteLength);
 
-                    stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error receiving packet " + e);
-                }
+                receivedData.Reset(HandleData(_data));
+
+                stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error receiving packet " + e);
             }
         }
     }
+}
 }
