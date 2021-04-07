@@ -10,10 +10,12 @@ namespace WebServer
         public int ID;
 
         public TCP Tcp;
+        public UDP Udp;
         public Client(int _clientId)
         {
             ID = _clientId;
             Tcp = new TCP(ID);
+            Udp = new UDP(ID);
         }
 
 
@@ -67,7 +69,7 @@ namespace WebServer
                         using (Packet _packet = new Packet(_packetBytes))
                         {
                             int _packetId = _packet.ReadInt();
-                            Server.packetHandlers[_packetId](id,_packet);
+                            Server.packetHandlers[_packetId](id, _packet);
                         }
                     });
                     _packetLength = 0;
@@ -88,41 +90,79 @@ namespace WebServer
                 return false;
             }
 
-        public void SendData(Packet _packet)
-        {
-            try
+            public void SendData(Packet _packet)
             {
-                if (Socket != null)
+                try
                 {
-                    stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
+                    if (Socket != null)
+                    {
+                        stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error sending data to player " + e);
                 }
             }
-            catch (Exception e)
+            private void ReceiveCallBack(IAsyncResult _result)
             {
-                Console.WriteLine("Error sending data to player " + e);
+                try
+                {
+                    int _byteLength = stream.EndRead(_result);
+                    if (_byteLength <= 0)
+                    {
+                        return;
+                    }
+                    byte[] _data = new byte[_byteLength];
+                    Array.Copy(receiveBuffer, _data, _byteLength);
+
+                    receivedData.Reset(HandleData(_data));
+
+                    stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error receiving packet " + e);
+                }
             }
         }
-        private void ReceiveCallBack(IAsyncResult _result)
+        public class UDP
         {
-            try
+            public IPEndPoint EndPoint;
+            private int id;
+
+
+            public UDP(int _id)
             {
-                int _byteLength = stream.EndRead(_result);
-                if (_byteLength <= 0)
-                {
-                    return;
-                }
-                byte[] _data = new byte[_byteLength];
-                Array.Copy(receiveBuffer, _data, _byteLength);
-
-                receivedData.Reset(HandleData(_data));
-
-                stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
+                id = _id;
             }
-            catch (Exception e)
+
+            public void Connect(IPEndPoint _endPoint)
             {
-                Console.WriteLine("Error receiving packet " + e);
+                EndPoint = _endPoint;
+                ServerSend.UDPTest(id);
+            }
+            public void SendData(Packet _packet)
+            {
+                Server.SendUDPData(EndPoint, _packet);
+            }
+
+
+
+            public void HandleData(Packet _packetData)
+            {
+                int _packetLength = _packetData.Length();
+                byte[] _packetBytes = _packetData.ReadBytes(_packetLength);
+
+                ThreadManager.ExecuteOnMainThread(() =>
+            {
+                using (Packet _packet = new Packet(_packetBytes))
+                {
+                    int _packetId = _packet.ReadInt();
+                    Server.packetHandlers[_packetId](id, _packet);
+                }
+            });
             }
         }
     }
-}
 }

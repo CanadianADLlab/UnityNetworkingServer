@@ -19,5 +19,14 @@ namespace WebServer
             }
         }
 
+        public static void UDPReceived(int _fromClient, Packet _packet)
+        {
+            string msg = _packet.ReadString();
+            Console.WriteLine($"{msg} this came from the thing");
+        }
+
+
+
+
     }
 }
