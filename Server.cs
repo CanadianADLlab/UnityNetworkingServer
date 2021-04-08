@@ -117,7 +117,8 @@ namespace WebServer
 
             packetHandlers = new Dictionary<int, PacketHandler>()
              {
-            {(int)ServerPackets.welcome,ServerHandle.WelcomeReceived}
+            {(int)ServerPackets.welcome,ServerHandle.WelcomeReceived},
+            {(int)ClientPackets.playerMovement,ServerHandle.PlayerMovementReceived}
             };
             Console.WriteLine("inited");
         }

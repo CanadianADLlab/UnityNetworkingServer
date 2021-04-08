@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 
 namespace WebServer
 {
@@ -83,6 +84,18 @@ namespace WebServer
                 _packet.Write(_player.Rotation);
 
                 SendTCPData(_toClient, _packet);
+            }
+        }
+
+        
+        public static void SendMovement(int _toClient,int _id,Vector3 _pos, Quaternion _rot)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.playerMovement))
+            {
+                _packet.Write(_id);
+                _packet.Write(_pos);
+                _packet.Write(_rot);
+                SendUDPData(_toClient, _packet);
             }
         }
 

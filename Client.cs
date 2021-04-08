@@ -152,17 +152,30 @@ namespace WebServer
 
             public void HandleData(Packet _packetData)
             {
-                int _packetLength = _packetData.Length();
+                int _packetLength = _packetData.ReadInt();
                 byte[] _packetBytes = _packetData.ReadBytes(_packetLength);
 
                 ThreadManager.ExecuteOnMainThread(() =>
-            {
-                using (Packet _packet = new Packet(_packetBytes))
                 {
-                    int _packetId = _packet.ReadInt();
-                    Server.packetHandlers[_packetId](id, _packet);
+                    using (Packet _packet = new Packet(_packetBytes))
+                    {
+                        int _packetId = _packet.ReadInt();
+                        Server.packetHandlers[_packetId](id, _packet);
+                    }
+                });
+            }
+        }
+        public void SendMovement(int _id, Vector3 _pos, Quaternion _rot)
+        {
+            foreach (Client _client in Server.Clients.Values)
+            {
+                if (_client.Player != null)
+                {
+                    if (_client.ID != ID)
+                    {
+                        ServerSend.SendMovement(ID, _id, _pos, _rot); // tell the game server to spawn the other pla yer
+                    }
                 }
-            });
             }
         }
         public void SendIntoGame(string _playerName)

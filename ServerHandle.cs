@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 
 namespace WebServer
 {
@@ -18,6 +19,15 @@ namespace WebServer
                 Console.WriteLine($"Player {username} has gotten the wrong client id somehow!");
             }
             Server.Clients[_fromClient].SendIntoGame(username);
+        }
+
+        public static void PlayerMovementReceived(int _fromClient, Packet _packet)
+        {
+            int _id = _packet.ReadInt();
+            Vector3 _pos = _packet.ReadVector3();
+            Quaternion _rot = _packet.ReadQuaternion();
+
+            Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
         }
 
 
