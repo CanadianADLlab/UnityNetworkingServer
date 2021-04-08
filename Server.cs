@@ -118,7 +118,8 @@ namespace WebServer
             packetHandlers = new Dictionary<int, PacketHandler>()
              {
             {(int)ServerPackets.welcome,ServerHandle.WelcomeReceived},
-            {(int)ClientPackets.playerMovement,ServerHandle.PlayerMovementReceived}
+            {(int)ClientPackets.playerMovement,ServerHandle.PlayerMovementReceived},
+            {(int)ClientPackets.objectMovement,ServerHandle.ObjectMovementReceived}
             };
             Console.WriteLine("inited");
         }

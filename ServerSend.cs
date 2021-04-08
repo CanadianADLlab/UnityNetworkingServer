@@ -87,12 +87,23 @@ namespace WebServer
             }
         }
 
-        
-        public static void SendMovement(int _exceptID,Vector3 _pos, Quaternion _rot)
+
+        public static void SendMovement(int _exceptID, Vector3 _pos, Quaternion _rot)
         {
             using (Packet _packet = new Packet((int)ServerPackets.playerMovement))
             {
                 _packet.Write(_exceptID);
+                _packet.Write(_pos);
+                _packet.Write(_rot);
+                SendUDPDataToAll(_exceptID, _packet);
+            }
+        }
+        public static void SendObjectMovement(int _exceptID,int _netID, Vector3 _pos, Quaternion _rot) // sends the object movement to everyone except whom is using it
+        { 
+            using (Packet _packet = new Packet((int)ServerPackets.objectMovement))
+            {
+                _packet.Write(_exceptID); // player id (guy who sent this request)
+                _packet.Write(_netID); // net id
                 _packet.Write(_pos);
                 _packet.Write(_rot);
                 SendUDPDataToAll(_exceptID, _packet);

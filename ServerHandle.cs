@@ -30,8 +30,18 @@ namespace WebServer
             Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
         }
 
+       
 
 
+        public static void ObjectMovementReceived(int _fromClient, Packet _packet)
+        {
+            int _id = _packet.ReadInt();
+            int _netID = _packet.ReadInt(); // unique id for the object
+            Vector3 _pos = _packet.ReadVector3();
+            Quaternion _rot = _packet.ReadQuaternion();
+
+            Server.Clients[_fromClient].SendObjectMovement(_id,_netID, _pos, _rot);
+        }
 
 
     }

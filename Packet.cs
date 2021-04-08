@@ -10,14 +10,17 @@ namespace WebServer
     {
         welcome = 1,
         spawnPlayer,
-        playerMovement
+        playerMovement,
+        objectMovement
+
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        playerMovement
+        playerMovement,
+        objectMovement
     }
 
     public class Packet : IDisposable

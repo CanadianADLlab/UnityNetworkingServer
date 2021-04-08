@@ -167,8 +167,14 @@ namespace WebServer
         }
         public void SendMovement(int _id, Vector3 _pos, Quaternion _rot)
         {
-           ServerSend.SendMovement(_id, _pos, _rot); // tell the game server to spawn the other pla yer
+            ServerSend.SendMovement(_id, _pos, _rot); // tell the game server to spawn the other pla yer
         }
+
+        public void SendObjectMovement(int _id,int _netID, Vector3 _pos, Quaternion _rot)
+        {
+            ServerSend.SendObjectMovement(_id,_netID,_pos, _rot); // tell the game server to spawn the other pla yer
+        }
+        
         public void SendIntoGame(string _playerName)
         {
             Player = new Player(ID, _playerName, Vector3.Zero);
