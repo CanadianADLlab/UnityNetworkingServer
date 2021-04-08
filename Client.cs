@@ -167,16 +167,7 @@ namespace WebServer
         }
         public void SendMovement(int _id, Vector3 _pos, Quaternion _rot)
         {
-            foreach (Client _client in Server.Clients.Values)
-            {
-                if (_client.Player != null)
-                {
-                    if (_client.ID != ID)
-                    {
-                        ServerSend.SendMovement(ID, _id, _pos, _rot); // tell the game server to spawn the other pla yer
-                    }
-                }
-            }
+           ServerSend.SendMovement(_id, _pos, _rot); // tell the game server to spawn the other pla yer
         }
         public void SendIntoGame(string _playerName)
         {

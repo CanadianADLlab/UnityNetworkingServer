@@ -88,14 +88,14 @@ namespace WebServer
         }
 
         
-        public static void SendMovement(int _toClient,int _id,Vector3 _pos, Quaternion _rot)
+        public static void SendMovement(int _exceptID,Vector3 _pos, Quaternion _rot)
         {
             using (Packet _packet = new Packet((int)ServerPackets.playerMovement))
             {
-                _packet.Write(_id);
+                _packet.Write(_exceptID);
                 _packet.Write(_pos);
                 _packet.Write(_rot);
-                SendUDPData(_toClient, _packet);
+                SendUDPDataToAll(_exceptID, _packet);
             }
         }
 
