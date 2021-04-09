@@ -37,8 +37,13 @@ namespace WebServer
 
             public void Disconnect()
             {
-                stream.Close(); // close the stream from this
-                Socket.Close();
+                if (Socket != null)
+                {
+                    stream.Close(); // close the stream from this
+                    Socket.Close();
+                    Socket = null;
+                    stream = null;
+                }
             }
             public void Connect(TcpClient _socket)
             {
@@ -111,7 +116,7 @@ namespace WebServer
                     Console.WriteLine("Error sending data to player " + e);
                 }
 
-              
+
             }
             private void ReceiveCallBack(IAsyncResult _result)
             {
@@ -129,7 +134,7 @@ namespace WebServer
 
                     stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
                 }
-                catch 
+                catch
                 {
                     Disconnect(); // there is a chance that an exception maaay get thrown and if soo we just disconnect (happens during disconnect)
                 }

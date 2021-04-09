@@ -90,9 +90,9 @@ namespace WebServer
                     }
                 }
             }
-            catch (Exception e)
+            catch 
             {
-                Console.WriteLine(e);
+                return;
             }
         }
 
@@ -104,11 +104,6 @@ namespace WebServer
                 Clients[_clientID].Tcp.Disconnect();
                 Clients[_clientID].Udp.Disconnect();
                 Clients.Remove(_clientID);
-
-                foreach (Client client in Clients.Values)
-                {
-                    Console.WriteLine(client.Player.Username);
-                }
             }
         }
 
