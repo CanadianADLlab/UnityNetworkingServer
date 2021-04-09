@@ -41,13 +41,11 @@ namespace WebServer
             tcpListener.BeginAcceptTcpClient(new System.AsyncCallback(TCPConnectCallback), null);
             Console.WriteLine("Connection comming from " + _client.Client.RemoteEndPoint + " ...");
 
-            for (int i = 1; i <= MaxPlayers; i++)
+            if (Clients.Count < MaxPlayers)
             {
-                if (Clients[i].Tcp.Socket == null)
-                {
-                    Clients[i].Tcp.Connect(_client);
-                    return;
-                }
+                Clients.Add(Clients.Count + 1, new Client(Clients.Count + 1));
+                Clients[Clients.Count].Tcp.Connect(_client); // added the client so now client.count is the right id without the +1
+                return;
             }
             Console.WriteLine("Server is full");
         }
@@ -94,6 +92,18 @@ namespace WebServer
             }
         }
 
+
+        public static void RemoveClient(int _clientID) // removes and disconnects a client
+        {
+            if (Clients.ContainsKey(_clientID))
+            {
+                Console.WriteLine(_clientID);
+                Clients[_clientID].Tcp.Disconnect();
+                Clients[_clientID].Udp.Disconnect();
+                Clients.Remove(_clientID);
+            }
+        }
+
         public static void SendUDPData(IPEndPoint _clientEndPoint, Packet _packet)
         {
             try
@@ -110,16 +120,12 @@ namespace WebServer
         }
         private static void InitializeServerData()
         {
-            for (int i = 1; i <= MaxPlayers; i++)
-            {
-                Clients.Add(i, new Client(i));
-            }
-
             packetHandlers = new Dictionary<int, PacketHandler>()
              {
             {(int)ServerPackets.welcome,ServerHandle.WelcomeReceived},
             {(int)ClientPackets.playerMovement,ServerHandle.PlayerMovementReceived},
-            {(int)ClientPackets.objectMovement,ServerHandle.ObjectMovementReceived}
+            {(int)ClientPackets.objectMovement,ServerHandle.ObjectMovementReceived},
+            {(int)ClientPackets.playerDisconnect,ServerHandle.DisconnectPlayer},
             };
             Console.WriteLine("inited");
         }

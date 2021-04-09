@@ -11,7 +11,9 @@ namespace WebServer
         welcome = 1,
         spawnPlayer,
         playerMovement,
-        objectMovement
+        objectMovement,
+
+        playerDisconnect
 
     }
 
@@ -20,7 +22,8 @@ namespace WebServer
     {
         welcomeReceived = 1,
         playerMovement,
-        objectMovement
+        objectMovement,
+        playerDisconnect
     }
 
     public class Packet : IDisposable

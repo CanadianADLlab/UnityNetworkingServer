@@ -35,6 +35,12 @@ namespace WebServer
                 id = _id;
             }
 
+            public void Disconnect()
+            {
+                Console.WriteLine(Socket.ToString());
+                stream.Close(); // close the stream from this
+                Socket.Close();
+            }
             public void Connect(TcpClient _socket)
             {
                 Socket = _socket;
@@ -105,6 +111,8 @@ namespace WebServer
                 {
                     Console.WriteLine("Error sending data to player " + e);
                 }
+
+              
             }
             private void ReceiveCallBack(IAsyncResult _result)
             {
@@ -138,7 +146,10 @@ namespace WebServer
             {
                 id = _id;
             }
-
+            public void Disconnect()
+            {
+                EndPoint = null; // there might be a way to dc a udp im not sure but for now fuck it
+            }
             public void Connect(IPEndPoint _endPoint)
             {
                 EndPoint = _endPoint;
@@ -170,11 +181,11 @@ namespace WebServer
             ServerSend.SendMovement(_id, _pos, _rot); // tell the game server to spawn the other pla yer
         }
 
-        public void SendObjectMovement(int _id,int _netID, Vector3 _pos, Quaternion _rot)
+        public void SendObjectMovement(int _id, int _netID, Vector3 _pos, Quaternion _rot)
         {
-            ServerSend.SendObjectMovement(_id,_netID,_pos, _rot); // tell the game server to spawn the other pla yer
+            ServerSend.SendObjectMovement(_id, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
         }
-        
+
         public void SendIntoGame(string _playerName)
         {
             Player = new Player(ID, _playerName, Vector3.Zero);

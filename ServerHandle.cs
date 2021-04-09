@@ -20,6 +20,15 @@ namespace WebServer
             }
             Server.Clients[_fromClient].SendIntoGame(username);
         }
+         public static void DisconnectPlayer(int _fromClient, Packet _packet)
+        {
+            int _clientIDToRemove = _packet.ReadInt();
+            Console.WriteLine($"{Server.Clients[_fromClient].Tcp.Socket.Client.RemoteEndPoint} player has disconnected with the id of {_fromClient}");
+
+            ServerSend.DisconnectClient(_clientIDToRemove,true); // true is a disconnect bool ( tells the server to remove the client and close connections)
+           // Server.RemoveClient(_clientIDToRemove);
+        }
+
 
         public static void PlayerMovementReceived(int _fromClient, Packet _packet)
         {
