@@ -37,7 +37,6 @@ namespace WebServer
 
             public void Disconnect()
             {
-                Console.WriteLine(Socket.ToString());
                 stream.Close(); // close the stream from this
                 Socket.Close();
             }
@@ -130,9 +129,9 @@ namespace WebServer
 
                     stream.BeginRead(receiveBuffer, 0, DataBufferSize, ReceiveCallBack, null);
                 }
-                catch (Exception e)
+                catch 
                 {
-                    Console.WriteLine("Error receiving packet " + e);
+                    Disconnect(); // there is a chance that an exception maaay get thrown and if soo we just disconnect (happens during disconnect)
                 }
             }
         }

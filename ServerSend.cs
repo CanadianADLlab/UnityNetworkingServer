@@ -24,23 +24,19 @@ namespace WebServer
         private static void SendTCPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 1; i <= Server.Clients.Count; i++)
+            foreach (var client in Server.Clients.Values)
             {
-                Server.Clients[i].Tcp.SendData(_packet);
+                client.Tcp.SendData(_packet);
             }
         }
         private static void SendTCPDataToAll(int _exceptClient, Packet _packet, bool disconnect = false)
         {
             _packet.WriteLength();
-            for (int i = 1; i <= Server.Clients.Count; i++)
+            foreach (var client in Server.Clients.Values)
             {
-                if (i != _exceptClient)
+                if (client.ID != _exceptClient)
                 {
-                    Server.Clients[i].Tcp.SendData(_packet);
-                }
-                if (disconnect)
-                {
-                    Console.WriteLine("Dcin " + i);
+                    client.Tcp.SendData(_packet);
                 }
             }
             if (disconnect)
@@ -54,19 +50,20 @@ namespace WebServer
         private static void SendUDPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 1; i <= Server.Clients.Count; i++)
+            foreach (var client in Server.Clients.Values)
             {
-                Server.Clients[i].Udp.SendData(_packet);
+                 client.Udp.SendData(_packet);
             }
         }
         private static void SendUDPDataToAll(int _exceptClient, Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 1; i <= Server.Clients.Count; i++)
+
+            foreach (var client in Server.Clients.Values)
             {
-                if (i != _exceptClient)
+                if (client.ID != _exceptClient)
                 {
-                    Server.Clients[i].Udp.SendData(_packet);
+                    client.Udp.SendData(_packet);
                 }
             }
         }

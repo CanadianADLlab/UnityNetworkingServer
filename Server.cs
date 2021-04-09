@@ -17,6 +17,9 @@ namespace WebServer
         public static Dictionary<int, PacketHandler> packetHandlers;
 
 
+        private static int clientIDCounter;
+
+
         public static void Start(int _maxPlayers, int _portNumber)
         {
             Console.WriteLine("Starting Server....");
@@ -43,8 +46,9 @@ namespace WebServer
 
             if (Clients.Count < MaxPlayers)
             {
-                Clients.Add(Clients.Count + 1, new Client(Clients.Count + 1));
-                Clients[Clients.Count].Tcp.Connect(_client); // added the client so now client.count is the right id without the +1
+                clientIDCounter++;
+                Clients.Add(clientIDCounter, new Client(clientIDCounter));
+                Clients[clientIDCounter].Tcp.Connect(_client); 
                 return;
             }
             Console.WriteLine("Server is full");
@@ -97,10 +101,14 @@ namespace WebServer
         {
             if (Clients.ContainsKey(_clientID))
             {
-                Console.WriteLine(_clientID);
                 Clients[_clientID].Tcp.Disconnect();
                 Clients[_clientID].Udp.Disconnect();
                 Clients.Remove(_clientID);
+
+                foreach (Client client in Clients.Values)
+                {
+                    Console.WriteLine(client.Player.Username);
+                }
             }
         }
 
