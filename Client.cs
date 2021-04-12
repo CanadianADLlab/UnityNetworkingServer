@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
@@ -10,6 +11,7 @@ namespace WebServer
         public static int DataBufferSize = 4096;
         public int ID;
 
+        public int RoomID;
         public Player Player;
         public TCP Tcp;
         public UDP Udp;
@@ -188,6 +190,12 @@ namespace WebServer
         public void SendObjectMovement(int _id, int _netID, Vector3 _pos, Quaternion _rot)
         {
             ServerSend.SendObjectMovement(_id, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
+        }
+
+        public void SendRooms(List<Room> _roomList)
+        {
+            Console.WriteLine("Sending rooms too " + ID);
+            ServerSend.SendRooms(ID,_roomList); // tell the game server to spawn the other player
         }
 
         public void SendIntoGame(string _playerName)

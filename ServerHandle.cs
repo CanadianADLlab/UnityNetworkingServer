@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
+using System.Linq;
 
 namespace WebServer
 {
@@ -18,18 +19,28 @@ namespace WebServer
             {
                 Console.WriteLine($"Player {username} has gotten the wrong client id somehow!");
             }
-            Server.Clients[_fromClient].SendIntoGame(username);
+            //    Server.Clients[_fromClient].SendIntoGame(username);
+            var roomList = Server.Rooms.Values.ToList(); // throws error without System.Linq
+            Server.Clients[_fromClient].SendRooms(roomList);
         }
-         public static void DisconnectPlayer(int _fromClient, Packet _packet)
+        public static void DisconnectPlayer(int _fromClient, Packet _packet)
         {
             int _clientIDToRemove = _packet.ReadInt();
             Console.WriteLine($"{Server.Clients[_fromClient].Tcp.Socket.Client.RemoteEndPoint} player has disconnected with the id of {_fromClient}");
 
-            ServerSend.DisconnectClient(_clientIDToRemove,true); // true is a disconnect bool ( tells the server to remove the client and close connections)
-           // Server.RemoveClient(_clientIDToRemove);
+            ServerSend.DisconnectClient(_clientIDToRemove, true); // true is a disconnect bool ( tells the server to remove the client and close connections)
+                                                                  // Server.RemoveClient(_clientIDToRemove);
         }
 
-
+        public static void CreateRoom(int _fromClient, Packet _packet)
+        {
+            Console.WriteLine("Creating room");
+            int _id = _packet.ReadInt();
+            string _roomName = _packet.ReadString();
+            
+            Server.AddRoom(_roomName,_id);
+           // Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
+        }
         public static void PlayerMovementReceived(int _fromClient, Packet _packet)
         {
             int _id = _packet.ReadInt();
@@ -39,7 +50,7 @@ namespace WebServer
             Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
         }
 
-       
+
 
 
         public static void ObjectMovementReceived(int _fromClient, Packet _packet)
@@ -49,7 +60,7 @@ namespace WebServer
             Vector3 _pos = _packet.ReadVector3();
             Quaternion _rot = _packet.ReadQuaternion();
 
-            Server.Clients[_fromClient].SendObjectMovement(_id,_netID, _pos, _rot);
+            Server.Clients[_fromClient].SendObjectMovement(_id, _netID, _pos, _rot);
         }
 
 

@@ -9,16 +9,17 @@ namespace WebServer
     {
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
-
+ 
         public static Dictionary<int, Client> Clients = new Dictionary<int, Client>();
+
+        public static Dictionary<int,Room> Rooms =  new Dictionary<int,Room>();
         private static TcpListener tcpListener;
         private static UdpClient udpListener;
         public delegate void PacketHandler(int _fromClient, Packet _packet);
         public static Dictionary<int, PacketHandler> packetHandlers;
 
-
         private static int clientIDCounter;
-
+        private static int roomIDCounter;
 
         public static void Start(int _maxPlayers, int _portNumber)
         {
@@ -43,7 +44,7 @@ namespace WebServer
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
             tcpListener.BeginAcceptTcpClient(new System.AsyncCallback(TCPConnectCallback), null);
             Console.WriteLine("Connection comming from " + _client.Client.RemoteEndPoint + " ...");
-
+            
             if (Clients.Count < MaxPlayers)
             {
                 clientIDCounter++;
@@ -83,7 +84,6 @@ namespace WebServer
                     }
 
 
-
                     if (Clients[_clientId].Udp.EndPoint.ToString() == _clientEndPoint.ToString())
                     {
                         Clients[_clientId].Udp.HandleData(_packet);
@@ -96,7 +96,16 @@ namespace WebServer
             }
         }
 
+        public static void AddRoom(string _roomName,int _firstClientID)
+        {
+            roomIDCounter++;
+            var newRoom = new Room(roomIDCounter,Clients[_firstClientID],_roomName);
 
+            Rooms.Add(roomIDCounter,newRoom);
+
+            ServerSend.RoomCreatedSuccesfully(_firstClientID);
+        
+        }
         public static void RemoveClient(int _clientID) // removes and disconnects a client
         {
             if (Clients.ContainsKey(_clientID))
@@ -129,6 +138,7 @@ namespace WebServer
             {(int)ClientPackets.playerMovement,ServerHandle.PlayerMovementReceived},
             {(int)ClientPackets.objectMovement,ServerHandle.ObjectMovementReceived},
             {(int)ClientPackets.playerDisconnect,ServerHandle.DisconnectPlayer},
+            {(int)ClientPackets.createRoom,ServerHandle.CreateRoom}
             };
             Console.WriteLine("inited");
         }

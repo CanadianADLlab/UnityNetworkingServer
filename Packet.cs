@@ -13,7 +13,9 @@ namespace WebServer
         playerMovement,
         objectMovement,
 
-        playerDisconnect
+        playerDisconnect,
+        sendRooms,
+        roomCreated
 
     }
 
@@ -23,7 +25,8 @@ namespace WebServer
         welcomeReceived = 1,
         playerMovement,
         objectMovement,
-        playerDisconnect
+        playerDisconnect,
+        createRoom
     }
 
     public class Packet : IDisposable

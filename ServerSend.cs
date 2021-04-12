@@ -52,7 +52,7 @@ namespace WebServer
             _packet.WriteLength();
             foreach (var client in Server.Clients.Values)
             {
-                 client.Udp.SendData(_packet);
+                client.Udp.SendData(_packet);
             }
         }
         private static void SendUDPDataToAll(int _exceptClient, Packet _packet)
@@ -72,6 +72,35 @@ namespace WebServer
             using (Packet _packet = new Packet((int)ServerPackets.welcome))
             {
                 _packet.Write(_msg);
+                _packet.Write(_toClient);
+
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
+        public static void SendRooms(int _toClient, List<Room> _roomList)
+        {
+            foreach (var room in _roomList)
+            {
+                using (Packet _packet = new Packet((int)ServerPackets.sendRooms))
+                {
+                    _packet.Write(room.RoomID);
+                    _packet.Write(room.RoomName);
+                    _packet.Write(room.RoomSize);
+                    _packet.Write(room.Clients.Count);
+                    _packet.Write(_toClient);
+
+                    SendTCPData(_toClient, _packet);
+                }
+            }
+        }
+
+        public static void RoomCreatedSuccesfully(int _toClient) // response to tell the client we made the room and they can proceed
+        {
+            Console.WriteLine("Room created");
+            using (Packet _packet = new Packet((int)ServerPackets.roomCreated))
+            {
+                _packet.Write("RoomCreated");
                 _packet.Write(_toClient);
 
                 SendTCPData(_toClient, _packet);
