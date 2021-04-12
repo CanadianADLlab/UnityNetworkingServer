@@ -182,14 +182,14 @@ namespace WebServer
                 });
             }
         }
-        public void SendMovement(int _id, Vector3 _pos, Quaternion _rot)
+        public void SendMovement(int _id,int _roomID,Vector3 _pos, Quaternion _rot)
         {
-            ServerSend.SendMovement(_id, _pos, _rot); // tell the game server to spawn the other pla yer
+            ServerSend.SendMovement(_id,_roomID,_pos, _rot); // tell the game server to spawn the other pla yer
         }
 
-        public void SendObjectMovement(int _id, int _netID, Vector3 _pos, Quaternion _rot)
+        public void SendObjectMovement(int _id,int _roomID,int _netID, Vector3 _pos, Quaternion _rot)
         {
-            ServerSend.SendObjectMovement(_id, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
+            ServerSend.SendObjectMovement(_id,_roomID, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
         }
 
         public void SendRooms(List<Room> _roomList)
@@ -202,7 +202,7 @@ namespace WebServer
         {
             Player = new Player(ID, _roomID,_playerName, Vector3.Zero);
             Console.WriteLine("The room is  " +_roomID );
-            foreach (Client _client in Server.Rooms[_roomID].Clients)
+            foreach (Client _client in Server.Rooms[_roomID].Clients.Values)
             {
                 if (_client.Player != null)
                 {
@@ -213,7 +213,7 @@ namespace WebServer
                 }
             }
 
-            foreach (Client _client in Server.Rooms[_roomID].Clients)
+            foreach (Client _client in Server.Rooms[_roomID].Clients.Values)
             {
                 if (_client.Player != null)
                 {

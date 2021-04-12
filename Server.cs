@@ -9,10 +9,10 @@ namespace WebServer
     {
         public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
- 
+
         public static Dictionary<int, Client> Clients = new Dictionary<int, Client>();
 
-        public static Dictionary<int,Room> Rooms =  new Dictionary<int,Room>();
+        public static Dictionary<int, Room> Rooms = new Dictionary<int, Room>();
         private static TcpListener tcpListener;
         private static UdpClient udpListener;
         public delegate void PacketHandler(int _fromClient, Packet _packet);
@@ -44,12 +44,12 @@ namespace WebServer
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
             tcpListener.BeginAcceptTcpClient(new System.AsyncCallback(TCPConnectCallback), null);
             Console.WriteLine("Connection comming from " + _client.Client.RemoteEndPoint + " ...");
-            
+
             if (Clients.Count < MaxPlayers)
             {
                 clientIDCounter++;
                 Clients.Add(clientIDCounter, new Client(clientIDCounter));
-                Clients[clientIDCounter].Tcp.Connect(_client); 
+                Clients[clientIDCounter].Tcp.Connect(_client);
                 return;
             }
             Console.WriteLine("Server is full");
@@ -90,30 +90,44 @@ namespace WebServer
                     }
                 }
             }
-            catch 
+            catch
             {
                 return;
             }
         }
 
-        public static void AddRoom(string _roomName,int _firstClientID)
+        public static void AddRoom(string _roomName, int _firstClientID)
         {
             roomIDCounter++;
-            var newRoom = new Room(roomIDCounter,Clients[_firstClientID],_roomName);
+            var newRoom = new Room(roomIDCounter,_firstClientID,Clients[_firstClientID], _roomName);
+            Rooms.Add(roomIDCounter, newRoom);
 
-            Rooms.Add(roomIDCounter,newRoom);
+            ServerSend.RoomCreatedSuccesfully(_firstClientID, roomIDCounter);
 
-            ServerSend.RoomCreatedSuccesfully(_firstClientID,roomIDCounter);
-        
         }
-        public static void RemoveClient(int _clientID) // removes and disconnects a client
+        public static void RemoveClient(int _clientID, int _roomID) // removes and disconnects a client
         {
+            if (_roomID >= 0)
+            {
+                Console.WriteLine("Removing this asshole from the room " + _roomID);
+                if (Rooms[_roomID].Clients.ContainsKey(_clientID))
+                {
+                    Rooms[_roomID].OnPlayerLeaveRoom(_clientID);
+                }
+             
+            }
             if (Clients.ContainsKey(_clientID))
             {
                 Clients[_clientID].Tcp.Disconnect();
                 Clients[_clientID].Udp.Disconnect();
                 Clients.Remove(_clientID);
             }
+
+        }
+        public static void RemoveRoom(int _roomID)
+        {
+            Console.WriteLine("Trashing the room my guy");
+            Rooms.Remove(_roomID);
         }
 
         public static void SendUDPData(IPEndPoint _clientEndPoint, Packet _packet)

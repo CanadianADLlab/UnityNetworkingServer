@@ -29,14 +29,15 @@ namespace WebServer
             int _clientIDCheck = _packet.ReadInt();
             string _username = _packet.ReadString();
             int _roomID = _packet.ReadInt();
-            Server.Clients[_fromClient].SendIntoGame(_username,_roomID);
+            Server.Clients[_fromClient].SendIntoGame(_username, _roomID);
         }
         public static void DisconnectPlayer(int _fromClient, Packet _packet)
         {
             int _clientIDToRemove = _packet.ReadInt();
+            int _roomID = _packet.ReadInt();
             Console.WriteLine($"{Server.Clients[_fromClient].Tcp.Socket.Client.RemoteEndPoint} player has disconnected with the id of {_fromClient}");
 
-            ServerSend.DisconnectClient(_clientIDToRemove, true); // true is a disconnect bool ( tells the server to remove the client and close connections)
+            ServerSend.DisconnectClient(_clientIDToRemove,_roomID,true); // true is a disconnect bool ( tells the server to remove the client and close connections)
                                                                   // Server.RemoveClient(_clientIDToRemove);
         }
 
@@ -52,10 +53,11 @@ namespace WebServer
         public static void PlayerMovementReceived(int _fromClient, Packet _packet)
         {
             int _id = _packet.ReadInt();
+            int _roomID = _packet.ReadInt();
             Vector3 _pos = _packet.ReadVector3();
             Quaternion _rot = _packet.ReadQuaternion();
 
-            Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
+            Server.Clients[_fromClient].SendMovement(_id, _roomID, _pos, _rot);
         }
 
 
@@ -64,11 +66,12 @@ namespace WebServer
         public static void ObjectMovementReceived(int _fromClient, Packet _packet)
         {
             int _id = _packet.ReadInt();
+            int _roomID = _packet.ReadInt();
             int _netID = _packet.ReadInt(); // unique id for the object
             Vector3 _pos = _packet.ReadVector3();
             Quaternion _rot = _packet.ReadQuaternion();
 
-            Server.Clients[_fromClient].SendObjectMovement(_id, _netID, _pos, _rot);
+            Server.Clients[_fromClient].SendObjectMovement(_id,_roomID,_netID, _pos, _rot);
         }
 
 
