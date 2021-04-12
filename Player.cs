@@ -12,12 +12,15 @@ namespace WebServer
         public Vector3 Position;
         public Quaternion Rotation;
 
-        public Player(int _id, string _username, Vector3 _spawnPosition)
+        public int RoomID; // The room the player has joined
+
+        public Player(int _id,int _roomID ,string _username, Vector3 _spawnPosition)
         {
             ID = _id;
             Username = _username;
             Position = _spawnPosition;
             Rotation = Quaternion.Identity;
+            RoomID = _roomID;
         }
     }
 }

@@ -198,11 +198,11 @@ namespace WebServer
             ServerSend.SendRooms(ID,_roomList); // tell the game server to spawn the other player
         }
 
-        public void SendIntoGame(string _playerName)
+        public void SendIntoGame(string _playerName,int _roomID)
         {
-            Player = new Player(ID, _playerName, Vector3.Zero);
-
-            foreach (Client _client in Server.Clients.Values)
+            Player = new Player(ID, _roomID,_playerName, Vector3.Zero);
+            Console.WriteLine("The room is  " +_roomID );
+            foreach (Client _client in Server.Rooms[_roomID].Clients)
             {
                 if (_client.Player != null)
                 {
@@ -213,7 +213,7 @@ namespace WebServer
                 }
             }
 
-            foreach (Client _client in Server.Clients.Values)
+            foreach (Client _client in Server.Rooms[_roomID].Clients)
             {
                 if (_client.Player != null)
                 {

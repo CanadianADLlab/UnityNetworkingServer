@@ -18,8 +18,8 @@ namespace WebServer
         public delegate void PacketHandler(int _fromClient, Packet _packet);
         public static Dictionary<int, PacketHandler> packetHandlers;
 
-        private static int clientIDCounter;
-        private static int roomIDCounter;
+        private static int clientIDCounter = 0;
+        private static int roomIDCounter = 0;
 
         public static void Start(int _maxPlayers, int _portNumber)
         {
@@ -103,7 +103,7 @@ namespace WebServer
 
             Rooms.Add(roomIDCounter,newRoom);
 
-            ServerSend.RoomCreatedSuccesfully(_firstClientID);
+            ServerSend.RoomCreatedSuccesfully(_firstClientID,roomIDCounter);
         
         }
         public static void RemoveClient(int _clientID) // removes and disconnects a client
@@ -138,7 +138,8 @@ namespace WebServer
             {(int)ClientPackets.playerMovement,ServerHandle.PlayerMovementReceived},
             {(int)ClientPackets.objectMovement,ServerHandle.ObjectMovementReceived},
             {(int)ClientPackets.playerDisconnect,ServerHandle.DisconnectPlayer},
-            {(int)ClientPackets.createRoom,ServerHandle.CreateRoom}
+            {(int)ClientPackets.createRoom,ServerHandle.CreateRoom},
+            {(int)ClientPackets.levelLoaded,ServerHandle.LevelLoaded}
             };
             Console.WriteLine("inited");
         }

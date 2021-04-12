@@ -95,13 +95,14 @@ namespace WebServer
             }
         }
 
-        public static void RoomCreatedSuccesfully(int _toClient) // response to tell the client we made the room and they can proceed
+        public static void RoomCreatedSuccesfully(int _toClient, int _roomID) // response to tell the client we made the room and they can proceed
         {
             Console.WriteLine("Room created");
             using (Packet _packet = new Packet((int)ServerPackets.roomCreated))
             {
-                _packet.Write("RoomCreated");
+                Console.WriteLine("RoomCreated " + _roomID);
                 _packet.Write(_toClient);
+                _packet.Write(_roomID);
 
                 SendTCPData(_toClient, _packet);
             }

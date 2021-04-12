@@ -23,6 +23,14 @@ namespace WebServer
             var roomList = Server.Rooms.Values.ToList(); // throws error without System.Linq
             Server.Clients[_fromClient].SendRooms(roomList);
         }
+
+        public static void LevelLoaded(int _fromClient, Packet _packet)
+        {
+            int _clientIDCheck = _packet.ReadInt();
+            string _username = _packet.ReadString();
+            int _roomID = _packet.ReadInt();
+            Server.Clients[_fromClient].SendIntoGame(_username,_roomID);
+        }
         public static void DisconnectPlayer(int _fromClient, Packet _packet)
         {
             int _clientIDToRemove = _packet.ReadInt();
@@ -37,9 +45,9 @@ namespace WebServer
             Console.WriteLine("Creating room");
             int _id = _packet.ReadInt();
             string _roomName = _packet.ReadString();
-            
-            Server.AddRoom(_roomName,_id);
-           // Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
+
+            Server.AddRoom(_roomName, _id);
+            // Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
         }
         public static void PlayerMovementReceived(int _fromClient, Packet _packet)
         {
