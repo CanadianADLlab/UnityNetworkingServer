@@ -14,19 +14,8 @@ namespace WebServer
             Console.Title = "Game Server";
             Console.WriteLine("Enter total players");
             isRunning = true;
-            int players = -999;
             int port = -999;
-            while (players <= 0)
-            {
-                try
-                {
-                    players = int.Parse(Console.ReadLine());
-                }
-                catch
-                {
-                    Console.WriteLine("Enter valid total players");
-                }
-            }
+        
             Console.WriteLine("Enter Port to run on");
             while (port <= 0)
             {
@@ -54,7 +43,7 @@ namespace WebServer
             msPerTick = 1000 / ticksPerSec;
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
-            Server.Start(players, port);
+            Server.Start(port);
 
         }
 

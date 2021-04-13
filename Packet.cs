@@ -5,7 +5,6 @@ using System.Text;
 
 namespace WebServer
 {
-    /// <summary>Sent from server to client.</summary>
     public enum ServerPackets
     {
         welcome = 1,
@@ -16,7 +15,8 @@ namespace WebServer
         playerDisconnect,
         sendRooms,
         roomCreated,
-        roomJoined
+        roomJoined,
+        roomJoinFailed
 
     }
 
@@ -29,9 +29,9 @@ namespace WebServer
         playerDisconnect,
         createRoom,
         levelLoaded,
-        joinRoom
+        joinRoom,
+        getRooms
     }
-
 
     public class Packet : IDisposable
     {

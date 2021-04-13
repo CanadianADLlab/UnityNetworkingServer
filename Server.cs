@@ -7,7 +7,6 @@ namespace WebServer
 {
     public class Server
     {
-        public static int MaxPlayers { get; private set; }
         public static int Port { get; private set; }
 
         public static Dictionary<int, Client> Clients = new Dictionary<int, Client>();
@@ -21,10 +20,9 @@ namespace WebServer
         private static int clientIDCounter = 0;
         private static int roomIDCounter = 0;
 
-        public static void Start(int _maxPlayers, int _portNumber)
+        public static void Start(int _portNumber)
         {
             Console.WriteLine("Starting Server....");
-            MaxPlayers = _maxPlayers;
             Port = _portNumber;
             InitializeServerData();
             tcpListener = new TcpListener(IPAddress.Any, Port);
@@ -45,14 +43,11 @@ namespace WebServer
             tcpListener.BeginAcceptTcpClient(new System.AsyncCallback(TCPConnectCallback), null);
             Console.WriteLine("Connection comming from " + _client.Client.RemoteEndPoint + " ...");
 
-            if (Clients.Count < MaxPlayers)
-            {
-                clientIDCounter++;
-                Clients.Add(clientIDCounter, new Client(clientIDCounter));
-                Clients[clientIDCounter].Tcp.Connect(_client);
-                return;
-            }
-            Console.WriteLine("Server is full");
+            clientIDCounter++;
+            Clients.Add(clientIDCounter, new Client(clientIDCounter));
+            Clients[clientIDCounter].Tcp.Connect(_client);
+            return;
+
         }
 
         private static void UDPReceiveCallback(IAsyncResult _result)
@@ -96,24 +91,28 @@ namespace WebServer
             }
         }
 
-        public static void AddRoom(string _roomName, int _firstClientID)
+        public static void AddRoom(string _roomName, int _firstClientID,int _roomSize)
         {
             roomIDCounter++;
-            var newRoom = new Room(roomIDCounter,_firstClientID,Clients[_firstClientID], _roomName);
+            var newRoom = new Room(roomIDCounter, _firstClientID, Clients[_firstClientID], _roomName,_roomSize);
             Rooms.Add(roomIDCounter, newRoom);
 
             ServerSend.RoomCreatedSuccesfully(_firstClientID, roomIDCounter);
 
         }
-         public static void AddClientToRoom(int _clientID, int _roomID)
+        public static void AddClientToRoom(int _clientID, int _roomID)
         {
-           
-            Rooms[_roomID].OnPlayerJoinRoom(Server.Clients[_clientID]);
 
-            ServerSend.RoomJoinedSuccessfully(_clientID,_roomID);
-
+            if (Rooms[_roomID].OnPlayerJoinRoom(Server.Clients[_clientID]))
+            {
+                ServerSend.RoomJoinedSuccessfully(_clientID, _roomID);
+            }
+            else
+            {
+                 ServerSend.RoomJoinFailed(_clientID, _roomID);
+            }
         }
-        
+
         public static void RemoveClient(int _clientID, int _roomID) // removes and disconnects a client
         {
             if (_roomID >= 0)
@@ -123,7 +122,7 @@ namespace WebServer
                 {
                     Rooms[_roomID].OnPlayerLeaveRoom(_clientID);
                 }
-             
+
             }
             if (Clients.ContainsKey(_clientID))
             {
@@ -163,7 +162,8 @@ namespace WebServer
             {(int)ClientPackets.playerDisconnect,ServerHandle.DisconnectPlayer},
             {(int)ClientPackets.createRoom,ServerHandle.CreateRoom},
             {(int)ClientPackets.levelLoaded,ServerHandle.LevelLoaded},
-            {(int)ClientPackets.joinRoom,ServerHandle.JoinRoom}
+            {(int)ClientPackets.joinRoom,ServerHandle.JoinRoom},
+            {(int)ClientPackets.getRooms,ServerHandle.SendRooms}
             };
             Console.WriteLine("inited");
         }

@@ -132,6 +132,18 @@ namespace WebServer
             }
         }
 
+        public static void RoomJoinFailed(int _toClient, int _roomID)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.roomJoinFailed))
+            {
+                _packet.Write(_toClient);
+                _packet.Write(_roomID);
+                _packet.Write("Room Full");
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
+
 
         public static void SpawnPlayer(int _toClient, Player _player)
         {

@@ -7,30 +7,35 @@ namespace WebServer
 {
     public class Room
     {
-        public Dictionary<int,Client> Clients = new Dictionary<int,Client>();
-        public int RoomID ;
+        public Dictionary<int, Client> Clients = new Dictionary<int, Client>();
+        public int RoomID;
         public string RoomName;
 
-        public int RoomSize = 10;
+        public int RoomSize;
 
-
-        public Room(int _RoomID,int _clientID,Client _firstClient,string _roomName)
+        public Room(int _RoomID, int _clientID, Client _firstClient, string _roomName, int _roomSize)
         {
-            OnPlayerJoinRoom(_firstClient);
             RoomID = _RoomID;
             RoomName = _roomName;
+            RoomSize = _roomSize;
+            OnPlayerJoinRoom(_firstClient);
         }
 
 
-        public void OnPlayerJoinRoom(Client _player)
+        public bool OnPlayerJoinRoom(Client _player)
         {
-            Clients.Add(_player.ID,_player);
+            if (Clients.Count < RoomSize)
+            {
+                Clients.Add(_player.ID, _player);
+                return true;
+            }
+            return false;
         }
 
-         public void OnPlayerLeaveRoom(int id)
+        public void OnPlayerLeaveRoom(int id)
         {
             Clients.Remove(id);
-            if(Clients.Count == 0) // no clients left 
+            if (Clients.Count == 0) // no clients left 
             {
                 Server.RemoveRoom(RoomID); // Rooms empty so lets trash that boi
             }

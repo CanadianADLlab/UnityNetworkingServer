@@ -20,6 +20,12 @@ namespace WebServer
                 Console.WriteLine($"Player {username} has gotten the wrong client id somehow!");
             }
             //    Server.Clients[_fromClient].SendIntoGame(username);
+            SendRooms(_fromClient, _packet);
+
+        }
+
+        public static void SendRooms(int _fromClient, Packet _packet)
+        {
             var roomList = Server.Rooms.Values.ToList(); // throws error without System.Linq
             Server.Clients[_fromClient].SendRooms(roomList);
         }
@@ -46,8 +52,9 @@ namespace WebServer
             Console.WriteLine("Creating room");
             int _id = _packet.ReadInt();
             string _roomName = _packet.ReadString();
+            int _roomSize = _packet.ReadInt();
 
-            Server.AddRoom(_roomName, _id);
+            Server.AddRoom(_roomName, _id, _roomSize);
             // Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
         }
 
@@ -57,8 +64,8 @@ namespace WebServer
             int _id = _packet.ReadInt();
             int _roomID = _packet.ReadInt();
 
-          //  Server.AddRoom(_roomName, _id);
-          Server.AddClientToRoom(_id,_roomID);
+            //  Server.AddRoom(_roomName, _id);
+            Server.AddClientToRoom(_id, _roomID);
         }
         public static void PlayerMovementReceived(int _fromClient, Packet _packet)
         {
