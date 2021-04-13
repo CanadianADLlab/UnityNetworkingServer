@@ -5,7 +5,8 @@ namespace WebServer
 {
     class Program
     {
-
+        public static int ticksPerSec;
+        public static int msPerTick;
         private static bool isRunning = false;
         static void Main(string[] args)
         {
@@ -38,7 +39,19 @@ namespace WebServer
                     Console.WriteLine("Enter valid port");
                 }
             }
-
+            Console.WriteLine("Enter ticks per second");
+            while (ticksPerSec <= 0)
+            {
+                try
+                {
+                    ticksPerSec = int.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    Console.WriteLine("Enter valid ticks per second");
+                }
+            }
+            msPerTick = 1000 / ticksPerSec;
             Thread mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
             Server.Start(players, port);
@@ -47,7 +60,7 @@ namespace WebServer
 
         private static void MainThread()
         {
-            Console.WriteLine($"Thread has started at {Constants.TICK_PER_SEC} ticks");
+            Console.WriteLine($"Thread has started at {ticksPerSec} ticks");
             DateTime _nextLoop = DateTime.Now;
 
             while (isRunning)
@@ -56,7 +69,7 @@ namespace WebServer
                 {
                     GameLogic.Update();
 
-                    _nextLoop = _nextLoop.AddMilliseconds(Constants.MS_PER_TICK);
+                    _nextLoop = _nextLoop.AddMilliseconds(msPerTick);
 
                     if (_nextLoop > DateTime.Now)
                     {
