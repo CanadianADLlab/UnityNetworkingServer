@@ -21,49 +21,62 @@ namespace WebServer
         }
 
 
-        private static void SendTCPDataToAll(Packet _packet,int _roomID)
+        private static void SendTCPDataToAll(Packet _packet, int _roomID)
         {
-            _packet.WriteLength();
-            foreach (var client in Server.Rooms[_roomID].Clients.Values)
+            if (Server.Rooms.ContainsKey(_roomID))
             {
-                client.Tcp.SendData(_packet);
-            }
-        }
-        private static void SendTCPDataToAll(int _exceptClient, Packet _packet, int _roomID,bool disconnect = false)
-        {
-            _packet.WriteLength();
-            foreach (var client in Server.Rooms[_roomID].Clients.Values)
-            {
-                if (client.ID != _exceptClient)
+                _packet.WriteLength();
+
+                foreach (var client in Server.Rooms[_roomID].Clients.Values)
                 {
                     client.Tcp.SendData(_packet);
                 }
             }
+        }
+        private static void SendTCPDataToAll(int _exceptClient, Packet _packet, int _roomID, bool disconnect = false)
+        {
+            if (Server.Rooms.ContainsKey(_roomID))
+            {
+                _packet.WriteLength();
+                foreach (var client in Server.Rooms[_roomID].Clients.Values)
+                {
+                    if (client.ID != _exceptClient)
+                    {
+                        client.Tcp.SendData(_packet);
+                    }
+                }
+            }
             if (disconnect)
             {
-                Server.RemoveClient(_exceptClient,_roomID); // tell the server to kill this client now that we are dced once wee sent this to everyone
+                Server.RemoveClient(_exceptClient, _roomID); // tell the server to kill this client now that we are dced once wee sent this to everyone
             }
         }
 
 
 
-        private static void SendUDPDataToAll(Packet _packet,int _roomID)
+        private static void SendUDPDataToAll(Packet _packet, int _roomID)
         {
-            _packet.WriteLength();
-            foreach (var client in Server.Rooms[_roomID].Clients.Values)
+            if (Server.Rooms.ContainsKey(_roomID))
             {
-                client.Udp.SendData(_packet);
-            }
-        }
-        private static void SendUDPDataToAll(int _exceptClient,int _roomID,Packet _packet)
-        {
-            _packet.WriteLength();
-
-            foreach (var client in Server.Rooms[_roomID].Clients.Values)
-            {
-                if (client.ID != _exceptClient)
+                _packet.WriteLength();
+                foreach (var client in Server.Rooms[_roomID].Clients.Values)
                 {
                     client.Udp.SendData(_packet);
+                }
+            }
+        }
+        private static void SendUDPDataToAll(int _exceptClient, int _roomID, Packet _packet)
+        {
+            if (Server.Rooms.ContainsKey(_roomID))
+            {
+                _packet.WriteLength();
+
+                foreach (var client in Server.Rooms[_roomID].Clients.Values)
+                {
+                    if (client.ID != _exceptClient)
+                    {
+                        client.Udp.SendData(_packet);
+                    }
                 }
             }
         }
@@ -123,14 +136,14 @@ namespace WebServer
         }
 
 
-        public static void SendMovement(int _exceptID,int _roomID,Vector3 _pos, Quaternion _rot)
+        public static void SendMovement(int _exceptID, int _roomID, Vector3 _pos, Quaternion _rot)
         {
             using (Packet _packet = new Packet((int)ServerPackets.playerMovement))
             {
                 _packet.Write(_exceptID);
                 _packet.Write(_pos);
                 _packet.Write(_rot);
-                SendUDPDataToAll(_exceptID, _roomID,_packet);
+                SendUDPDataToAll(_exceptID, _roomID, _packet);
             }
         }
         public static void SendObjectMovement(int _exceptID, int _roomID, int _netID, Vector3 _pos, Quaternion _rot) // sends the object movement to everyone except whom is using it
@@ -141,7 +154,7 @@ namespace WebServer
                 _packet.Write(_netID); // net id
                 _packet.Write(_pos);
                 _packet.Write(_rot);
-                SendUDPDataToAll(_exceptID,_roomID,_packet);
+                SendUDPDataToAll(_exceptID, _roomID, _packet);
             }
         }
 
@@ -151,7 +164,7 @@ namespace WebServer
             {
                 _packet.Write(_clientID); // player id (guy who sent this request)
 
-                SendTCPDataToAll(_clientID, _packet, _roomID ,disconnect);
+                SendTCPDataToAll(_clientID, _packet, _roomID, disconnect);
             }
         }
 
