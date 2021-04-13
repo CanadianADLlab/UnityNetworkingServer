@@ -105,6 +105,15 @@ namespace WebServer
             ServerSend.RoomCreatedSuccesfully(_firstClientID, roomIDCounter);
 
         }
+         public static void AddClientToRoom(int _clientID, int _roomID)
+        {
+           
+            Rooms[_roomID].OnPlayerJoinRoom(Server.Clients[_clientID]);
+
+            ServerSend.RoomJoinedSuccessfully(_clientID,_roomID);
+
+        }
+        
         public static void RemoveClient(int _clientID, int _roomID) // removes and disconnects a client
         {
             if (_roomID >= 0)
@@ -153,7 +162,8 @@ namespace WebServer
             {(int)ClientPackets.objectMovement,ServerHandle.ObjectMovementReceived},
             {(int)ClientPackets.playerDisconnect,ServerHandle.DisconnectPlayer},
             {(int)ClientPackets.createRoom,ServerHandle.CreateRoom},
-            {(int)ClientPackets.levelLoaded,ServerHandle.LevelLoaded}
+            {(int)ClientPackets.levelLoaded,ServerHandle.LevelLoaded},
+            {(int)ClientPackets.joinRoom,ServerHandle.JoinRoom}
             };
             Console.WriteLine("inited");
         }

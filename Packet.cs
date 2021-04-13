@@ -5,30 +5,33 @@ using System.Text;
 
 namespace WebServer
 {
- /// <summary>Sent from server to client.</summary>
-public enum ServerPackets
-{
-    welcome = 1,
-    spawnPlayer,
-    playerMovement,
-    objectMovement,
+    /// <summary>Sent from server to client.</summary>
+    public enum ServerPackets
+    {
+        welcome = 1,
+        spawnPlayer,
+        playerMovement,
+        objectMovement,
 
-    playerDisconnect,
-    sendRooms,
-    roomCreated
+        playerDisconnect,
+        sendRooms,
+        roomCreated,
+        roomJoined
 
-}
+    }
 
-/// <summary>Sent from client to server.</summary>
-public enum ClientPackets
-{
-    welcomeReceived = 1,
-    playerMovement,
-    objectMovement,
-    playerDisconnect,
-    createRoom,
-    levelLoaded
-}
+    /// <summary>Sent from client to server.</summary>
+    public enum ClientPackets
+    {
+        welcomeReceived = 1,
+        playerMovement,
+        objectMovement,
+        playerDisconnect,
+        createRoom,
+        levelLoaded,
+        joinRoom
+    }
+
 
     public class Packet : IDisposable
     {

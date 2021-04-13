@@ -37,8 +37,8 @@ namespace WebServer
             int _roomID = _packet.ReadInt();
             Console.WriteLine($"{Server.Clients[_fromClient].Tcp.Socket.Client.RemoteEndPoint} player has disconnected with the id of {_fromClient}");
 
-            ServerSend.DisconnectClient(_clientIDToRemove,_roomID,true); // true is a disconnect bool ( tells the server to remove the client and close connections)
-                                                                  // Server.RemoveClient(_clientIDToRemove);
+            ServerSend.DisconnectClient(_clientIDToRemove, _roomID, true); // true is a disconnect bool ( tells the server to remove the client and close connections)
+                                                                           // Server.RemoveClient(_clientIDToRemove);
         }
 
         public static void CreateRoom(int _fromClient, Packet _packet)
@@ -49,6 +49,16 @@ namespace WebServer
 
             Server.AddRoom(_roomName, _id);
             // Server.Clients[_fromClient].SendMovement(_id, _pos, _rot);
+        }
+
+        public static void JoinRoom(int _fromClient, Packet _packet)
+        {
+            Console.WriteLine("Creating room");
+            int _id = _packet.ReadInt();
+            int _roomID = _packet.ReadInt();
+
+          //  Server.AddRoom(_roomName, _id);
+          Server.AddClientToRoom(_id,_roomID);
         }
         public static void PlayerMovementReceived(int _fromClient, Packet _packet)
         {
@@ -71,7 +81,7 @@ namespace WebServer
             Vector3 _pos = _packet.ReadVector3();
             Quaternion _rot = _packet.ReadQuaternion();
 
-            Server.Clients[_fromClient].SendObjectMovement(_id,_roomID,_netID, _pos, _rot);
+            Server.Clients[_fromClient].SendObjectMovement(_id, _roomID, _netID, _pos, _rot);
         }
 
 

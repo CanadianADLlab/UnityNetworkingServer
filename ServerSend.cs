@@ -121,6 +121,17 @@ namespace WebServer
             }
         }
 
+        public static void RoomJoinedSuccessfully(int _toClient, int _roomID)
+        {
+            Console.WriteLine("Room created");
+            using (Packet _packet = new Packet((int)ServerPackets.roomJoined))
+            {
+                _packet.Write(_toClient);
+                _packet.Write(_roomID);
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
 
         public static void SpawnPlayer(int _toClient, Player _player)
         {

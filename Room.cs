@@ -16,15 +16,15 @@ namespace WebServer
 
         public Room(int _RoomID,int _clientID,Client _firstClient,string _roomName)
         {
-            OnPlayerJoinRoom(_clientID,_firstClient);
+            OnPlayerJoinRoom(_firstClient);
             RoomID = _RoomID;
             RoomName = _roomName;
         }
 
 
-        public void OnPlayerJoinRoom(int _clientID,Client _player)
+        public void OnPlayerJoinRoom(Client _player)
         {
-            Clients.Add(_clientID,_player);
+            Clients.Add(_player.ID,_player);
         }
 
          public void OnPlayerLeaveRoom(int id)
