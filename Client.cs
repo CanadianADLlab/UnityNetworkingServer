@@ -182,9 +182,9 @@ namespace WebServer
                 });
             }
         }
-        public void SendMovement(int _id,int _roomID,Vector3 _pos, Quaternion _rot)
+        public void SendMovement(int _id,int _roomID,Vector3 _pos, Quaternion _rot,bool _lerp)
         {
-            ServerSend.SendMovement(_id,_roomID,_pos, _rot); // tell the game server to spawn the other pla yer
+            ServerSend.SendMovement(_id,_roomID,_pos, _rot,_lerp); // tell the game server to spawn the other pla yer
         }
 
         public void SendObjectMovement(int _id,int _roomID,int _netID, Vector3 _pos, Quaternion _rot)

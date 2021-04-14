@@ -73,8 +73,9 @@ namespace WebServer
             int _roomID = _packet.ReadInt();
             Vector3 _pos = _packet.ReadVector3();
             Quaternion _rot = _packet.ReadQuaternion();
+            bool _lerp = _packet.ReadBool();
 
-            Server.Clients[_fromClient].SendMovement(_id, _roomID, _pos, _rot);
+            Server.Clients[_fromClient].SendMovement(_id, _roomID, _pos, _rot,_lerp);
         }
 
 

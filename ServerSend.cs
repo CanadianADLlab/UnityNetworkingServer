@@ -167,13 +167,14 @@ namespace WebServer
         }
 
 
-        public static void SendMovement(int _exceptID, int _roomID, Vector3 _pos, Quaternion _rot)
+        public static void SendMovement(int _exceptID, int _roomID, Vector3 _pos, Quaternion _rot,bool _lerp)
         {
             using (Packet _packet = new Packet((int)ServerPackets.playerMovement))
             {
                 _packet.Write(_exceptID);
                 _packet.Write(_pos);
                 _packet.Write(_rot);
+                _packet.Write(_lerp);
                 SendUDPDataToAll(_exceptID, _roomID, _packet);
             }
         }
