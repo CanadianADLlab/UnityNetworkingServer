@@ -91,6 +91,16 @@ namespace WebServer
             Server.Clients[_fromClient].SendObjectMovement(_id, _roomID, _netID, _pos, _rot);
         }
 
+       public static void SetObjectLocation(int _fromClient, Packet _packet)
+       {
+            int _clientToSendID = _packet.ReadInt();
+            int _roomID = _packet.ReadInt();
+            int _netID = _packet.ReadInt(); // unique id for the object
+            Vector3 _pos = _packet.ReadVector3();
+            Quaternion _rot = _packet.ReadQuaternion();
+
+            ServerSend.SendObjectLocation(_clientToSendID, _roomID, _netID, _pos, _rot);
+       }
 
     }
 }

@@ -98,6 +98,7 @@ namespace WebServer
             Rooms.Add(roomIDCounter, newRoom);
 
             ServerSend.RoomCreatedSuccesfully(_firstClientID, roomIDCounter);
+            ServerSend.SendNewHost(_firstClientID, roomIDCounter);
 
         }
         public static void AddClientToRoom(int _clientID, int _roomID)
@@ -163,7 +164,8 @@ namespace WebServer
             {(int)ClientPackets.createRoom,ServerHandle.CreateRoom},
             {(int)ClientPackets.levelLoaded,ServerHandle.LevelLoaded},
             {(int)ClientPackets.joinRoom,ServerHandle.JoinRoom},
-            {(int)ClientPackets.getRooms,ServerHandle.SendRooms}
+            {(int)ClientPackets.getRooms,ServerHandle.SendRooms},
+            {(int)ClientPackets.objectLocationSet,ServerHandle.SetObjectLocation},
             };
             Console.WriteLine("inited");
         }

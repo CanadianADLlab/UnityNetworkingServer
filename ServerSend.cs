@@ -143,6 +143,14 @@ namespace WebServer
             }
         }
 
+        public static void SendNewHost(int _toClient, int _roomID)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.newHostSelected))
+            {
+                Console.WriteLine("telling user they are host");
+                SendTCPData(_toClient, _packet);
+            }
+        }
 
 
         public static void SpawnPlayer(int _toClient, Player _player)
@@ -180,6 +188,19 @@ namespace WebServer
                 SendUDPDataToAll(_exceptID, _roomID, _packet);
             }
         }
+
+        public static void SendObjectLocation(int _clientToSendToID, int _roomID, int _netID, Vector3 _pos, Quaternion _rot)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.setObjectLocation))
+            {
+                _packet.Write(_clientToSendToID); // player id (guy who sent this request)
+                _packet.Write(_netID); // net id
+                _packet.Write(_pos);
+                _packet.Write(_rot);
+                SendTCPData(_clientToSendToID, _packet); // sends as tcp because it NEEDS TO BE SET CORRECT
+            }
+        }
+
 
         public static void DisconnectClient(int _clientID, int _roomID, bool disconnect)
         {
