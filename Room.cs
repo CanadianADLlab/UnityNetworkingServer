@@ -37,7 +37,12 @@ namespace WebServer
 
         public void OnPlayerLeaveRoom(int id)
         {
-            if (Clients[id].ID == RoomHostID && Clients.Count != 0) // host quit so we need to set a new one 
+            Clients.Remove(id);
+            if (Clients.Count == 0) // no clients left 
+            {
+                Server.RemoveRoom(RoomID); // Rooms empty so lets trash that boi
+            }
+            if (id == RoomHostID && Clients.Count != 0) // host quit so we need to set a new one 
             {
                 foreach (var Client in Clients.Values)
                 {
@@ -45,11 +50,6 @@ namespace WebServer
                     ServerSend.SendNewHost(RoomHostID, RoomID); // we need to hit our client up and be like EH YOU HOST NOW
                     break;
                 }
-            }
-            Clients.Remove(id);
-            if (Clients.Count == 0) // no clients left 
-            {
-                Server.RemoveRoom(RoomID); // Rooms empty so lets trash that boi
             }
         }
 
