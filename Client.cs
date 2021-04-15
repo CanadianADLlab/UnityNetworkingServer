@@ -39,7 +39,7 @@ namespace WebServer
 
             public void Disconnect()
             {
-                if (Socket != null)
+                if (Socket != null || stream != null)
                 {
                     stream.Close(); // close the stream from this
                     Socket.Close();
