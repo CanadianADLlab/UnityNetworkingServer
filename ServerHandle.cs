@@ -35,7 +35,8 @@ namespace WebServer
             int _clientIDCheck = _packet.ReadInt();
             string _username = _packet.ReadString();
             int _roomID = _packet.ReadInt();
-            Server.Clients[_fromClient].SendIntoGame(_username, _roomID);
+            bool _isVR = _packet.ReadBool();
+            Server.Clients[_fromClient].SendIntoGame(_username, _roomID,_isVR);
         }
         public static void DisconnectPlayer(int _fromClient, Packet _packet)
         {

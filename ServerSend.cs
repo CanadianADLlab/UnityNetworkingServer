@@ -153,7 +153,7 @@ namespace WebServer
         }
 
 
-        public static void SpawnPlayer(int _toClient, Player _player)
+        public static void SpawnPlayer(int _toClient, Player _player,bool _isVR)
         {
             using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer))
             {
@@ -161,6 +161,7 @@ namespace WebServer
                 _packet.Write(_player.Username);
                 _packet.Write(_player.Position);
                 _packet.Write(_player.Rotation);
+                _packet.Write(_isVR);
 
                 SendTCPData(_toClient, _packet);
             }

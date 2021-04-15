@@ -198,7 +198,7 @@ namespace WebServer
             ServerSend.SendRooms(ID,_roomList); // tell the game server to spawn the other player
         }
 
-        public void SendIntoGame(string _playerName,int _roomID)
+        public void SendIntoGame(string _playerName,int _roomID,bool _isVR)
         {
             Player = new Player(ID, _roomID,_playerName, Vector3.Zero);
             Console.WriteLine("The room is  " +_roomID );
@@ -208,7 +208,7 @@ namespace WebServer
                 {
                     if (_client.ID != ID)
                     {
-                        ServerSend.SpawnPlayer(ID, _client.Player); // tell the game server to spawn the other pla yer
+                        ServerSend.SpawnPlayer(ID, _client.Player,_isVR); // tell the game server to spawn the other pla yer
                     }
                 }
             }
@@ -217,7 +217,7 @@ namespace WebServer
             {
                 if (_client.Player != null)
                 {
-                    ServerSend.SpawnPlayer(_client.ID, Player); // tell the player to spawn me
+                    ServerSend.SpawnPlayer(_client.ID, Player,_isVR); // tell the player to spawn me
                 }
             }
         }
