@@ -153,7 +153,7 @@ namespace WebServer
         }
 
 
-        public static void SpawnPlayer(int _toClient, Player _player,bool _isVR)
+        public static void SpawnPlayer(int _toClient, Player _player, bool _isVR)
         {
             using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer))
             {
@@ -168,14 +168,39 @@ namespace WebServer
         }
 
 
-        public static void SendMovement(int _exceptID, int _roomID, Vector3 _pos, Quaternion _rot,bool _lerp)
+        public static void SendMovement(int _exceptID, int _roomID, Vector3 _pos, Quaternion _rot, bool _lerp, bool _isVR)
         {
             using (Packet _packet = new Packet((int)ServerPackets.playerMovement))
             {
                 _packet.Write(_exceptID);
+
                 _packet.Write(_pos);
                 _packet.Write(_rot);
+                
                 _packet.Write(_lerp);
+                _packet.Write(_isVR);
+                SendUDPDataToAll(_exceptID, _roomID, _packet);
+            }
+        }
+
+        public static void SendMovement(int _exceptID, int _roomID, Vector3 _pos, Quaternion _rot, Vector3 _leftHandPos, Quaternion _leftHandRot, Vector3 _rightHandPos, Quaternion _rightHandRot, bool _lerp, bool _isVR)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.playerMovement))
+            {
+                _packet.Write(_exceptID);
+
+                _packet.Write(_pos);
+                _packet.Write(_rot);
+
+                _packet.Write(_lerp);
+                _packet.Write(_isVR);
+
+                _packet.Write(_leftHandPos);
+                _packet.Write(_leftHandRot);
+
+                _packet.Write(_rightHandPos);
+                _packet.Write(_rightHandRot);
+
                 SendUDPDataToAll(_exceptID, _roomID, _packet);
             }
         }

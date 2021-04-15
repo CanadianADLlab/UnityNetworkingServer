@@ -36,7 +36,7 @@ namespace WebServer
             string _username = _packet.ReadString();
             int _roomID = _packet.ReadInt();
             bool _isVR = _packet.ReadBool();
-            Server.Clients[_fromClient].SendIntoGame(_username, _roomID,_isVR);
+            Server.Clients[_fromClient].SendIntoGame(_username, _roomID, _isVR);
         }
         public static void DisconnectPlayer(int _fromClient, Packet _packet)
         {
@@ -72,11 +72,26 @@ namespace WebServer
         {
             int _id = _packet.ReadInt();
             int _roomID = _packet.ReadInt();
+
             Vector3 _pos = _packet.ReadVector3();
             Quaternion _rot = _packet.ReadQuaternion();
-            bool _lerp = _packet.ReadBool();
 
-            Server.Clients[_fromClient].SendMovement(_id, _roomID, _pos, _rot,_lerp);
+            bool _lerp = _packet.ReadBool();
+            bool _isVr = _packet.ReadBool();
+            if (!_isVr)
+            {
+                Server.Clients[_fromClient].SendMovement(_id, _roomID, _pos, _rot, _lerp,_isVr);
+            }
+            else
+            {
+                Vector3 _leftHandPos = _packet.ReadVector3();
+                Quaternion _leftHandRot = _packet.ReadQuaternion();
+
+                Vector3 _rightHandPos = _packet.ReadVector3();
+                Quaternion _rightHandRot = _packet.ReadQuaternion();
+                
+                Server.Clients[_fromClient].SendMovement(_id, _roomID, _pos, _rot, _leftHandPos, _leftHandRot, _rightHandPos, _rightHandRot,_lerp,_isVr);
+            }
         }
 
 
@@ -93,8 +108,8 @@ namespace WebServer
             Server.Clients[_fromClient].SendObjectMovement(_id, _roomID, _netID, _pos, _rot);
         }
 
-       public static void SetObjectLocation(int _fromClient, Packet _packet)
-       {
+        public static void SetObjectLocation(int _fromClient, Packet _packet)
+        {
             int _clientToSendID = _packet.ReadInt();
             int _roomID = _packet.ReadInt();
             int _netID = _packet.ReadInt(); // unique id for the object
@@ -102,7 +117,7 @@ namespace WebServer
             Quaternion _rot = _packet.ReadQuaternion();
 
             ServerSend.SendObjectLocation(_clientToSendID, _roomID, _netID, _pos, _rot);
-       }
+        }
 
     }
 }

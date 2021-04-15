@@ -39,7 +39,7 @@ namespace WebServer
 
             public void Disconnect()
             {
-                if (Socket != null && stream != null)
+                if (Socket != null || stream != null)
                 {
                     stream.Close(); // close the stream from this
                     Socket.Close();
@@ -182,33 +182,39 @@ namespace WebServer
                 });
             }
         }
-        public void SendMovement(int _id,int _roomID,Vector3 _pos, Quaternion _rot,bool _lerp)
+        public void SendMovement(int _id, int _roomID, Vector3 _pos, Quaternion _rot, bool _lerp, bool _isVR)
         {
-            ServerSend.SendMovement(_id,_roomID,_pos, _rot,_lerp); // tell the game server to spawn the other pla yer
+            ServerSend.SendMovement(_id, _roomID, _pos, _rot, _lerp, _isVR); // tell the game server to spawn the other pla yer
         }
 
-        public void SendObjectMovement(int _id,int _roomID,int _netID, Vector3 _pos, Quaternion _rot)
+        public void SendMovement(int _id, int _roomID, Vector3 _pos, Quaternion _rot, Vector3 _leftHandPos, Quaternion _leftHandRot, Vector3 _rightHandPos, Quaternion _rightHandRot, bool _lerp, bool _isVR)
         {
-            ServerSend.SendObjectMovement(_id,_roomID, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
+            ServerSend.SendMovement(_id, _roomID, _pos, _rot, _leftHandPos, _leftHandRot, _rightHandPos, _rightHandRot, _lerp, _isVR); // tell the game server to spawn the other pla yer
         }
-    
+
+
+        public void SendObjectMovement(int _id, int _roomID, int _netID, Vector3 _pos, Quaternion _rot)
+        {
+            ServerSend.SendObjectMovement(_id, _roomID, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
+        }
+
         public void SendRooms(List<Room> _roomList)
         {
             Console.WriteLine("Sending rooms too " + ID);
-            ServerSend.SendRooms(ID,_roomList); // tell the game server to spawn the other player
+            ServerSend.SendRooms(ID, _roomList); // tell the game server to spawn the other player
         }
 
-        public void SendIntoGame(string _playerName,int _roomID,bool _isVR)
+        public void SendIntoGame(string _playerName, int _roomID, bool _isVR)
         {
-            Player = new Player(ID, _roomID,_playerName, Vector3.Zero);
-            Console.WriteLine("The room is  " +_roomID );
+            Player = new Player(ID, _roomID, _playerName, Vector3.Zero,_isVR);
+            Console.WriteLine("The room is  " + _roomID);
             foreach (Client _client in Server.Rooms[_roomID].Clients.Values)
             {
                 if (_client.Player != null)
                 {
                     if (_client.ID != ID)
                     {
-                        ServerSend.SpawnPlayer(ID, _client.Player,_isVR); // tell the game server to spawn the other pla yer
+                        ServerSend.SpawnPlayer(ID, _client.Player, _client.Player.IsVR); // tell the game server to spawn the other pla yer
                     }
                 }
             }
@@ -217,7 +223,7 @@ namespace WebServer
             {
                 if (_client.Player != null)
                 {
-                    ServerSend.SpawnPlayer(_client.ID, Player,_isVR); // tell the player to spawn me
+                    ServerSend.SpawnPlayer(_client.ID, Player, Player.IsVR); // tell the player to spawn me
                 }
             }
         }
