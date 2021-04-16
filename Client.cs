@@ -39,11 +39,14 @@ namespace WebServer
 
             public void Disconnect()
             {
-                if (Socket != null || stream != null)
+                if (Socket != null)
                 {
-                    stream.Close(); // close the stream from this
                     Socket.Close();
                     Socket = null;
+                }
+                if (stream != null)
+                {
+                    stream.Close(); // close the stream from this
                     stream = null;
                 }
             }
@@ -182,26 +185,26 @@ namespace WebServer
                 });
             }
         }
-        public void SendMovement(int _id,int _roomID,Vector3 _pos, Quaternion _rot,bool _lerp)
+        public void SendMovement(int _id, int _roomID, Vector3 _pos, Quaternion _rot, bool _lerp)
         {
-            ServerSend.SendMovement(_id,_roomID,_pos, _rot,_lerp); // tell the game server to spawn the other pla yer
+            ServerSend.SendMovement(_id, _roomID, _pos, _rot, _lerp); // tell the game server to spawn the other pla yer
         }
 
-        public void SendObjectMovement(int _id,int _roomID,int _netID, Vector3 _pos, Quaternion _rot)
+        public void SendObjectMovement(int _id, int _roomID, int _netID, Vector3 _pos, Quaternion _rot)
         {
-            ServerSend.SendObjectMovement(_id,_roomID, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
+            ServerSend.SendObjectMovement(_id, _roomID, _netID, _pos, _rot); // tell the game server to spawn the other pla yer
         }
-    
+
         public void SendRooms(List<Room> _roomList)
         {
             Console.WriteLine("Sending rooms too " + ID);
-            ServerSend.SendRooms(ID,_roomList); // tell the game server to spawn the other player
+            ServerSend.SendRooms(ID, _roomList); // tell the game server to spawn the other player
         }
 
-        public void SendIntoGame(string _playerName,int _roomID)
+        public void SendIntoGame(string _playerName, int _roomID)
         {
-            Player = new Player(ID, _roomID,_playerName, Vector3.Zero);
-            Console.WriteLine("The room is  " +_roomID );
+            Player = new Player(ID, _roomID, _playerName, Vector3.Zero);
+            Console.WriteLine("The room is  " + _roomID);
             foreach (Client _client in Server.Rooms[_roomID].Clients.Values)
             {
                 if (_client.Player != null)
