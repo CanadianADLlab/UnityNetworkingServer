@@ -118,7 +118,7 @@ namespace WebServer
         {
             if (_roomID >= 0)
             {
-                Console.WriteLine("Removing this asshole from the room " + _roomID);
+                Console.WriteLine("Removing from the room " + _roomID);
                 if (Rooms[_roomID].Clients.ContainsKey(_clientID))
                 {
                     Rooms[_roomID].OnPlayerLeaveRoom(_clientID);

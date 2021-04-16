@@ -39,11 +39,14 @@ namespace WebServer
 
             public void Disconnect()
             {
-                if (Socket != null || stream != null)
+                if (Socket != null)
                 {
-                    stream.Close(); // close the stream from this
                     Socket.Close();
                     Socket = null;
+                }
+                if (stream != null)
+                {
+                    stream.Close(); // close the stream from this
                     stream = null;
                 }
             }
@@ -206,7 +209,7 @@ namespace WebServer
 
         public void SendIntoGame(string _playerName, int _roomID, bool _isVR)
         {
-            Player = new Player(ID, _roomID, _playerName, Vector3.Zero,_isVR);
+            Player = new Player(ID, _roomID, _playerName, Vector3.Zero, _isVR);
             Console.WriteLine("The room is  " + _roomID);
             foreach (Client _client in Server.Rooms[_roomID].Clients.Values)
             {
